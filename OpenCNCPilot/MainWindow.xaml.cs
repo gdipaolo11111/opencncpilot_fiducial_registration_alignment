@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using OpenCNCPilot.Communication;
 using OpenCNCPilot.GCode;
 using OpenCNCPilot.Util;
@@ -11,12 +11,28 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
+using AForge.Video;
+using AForge.Video.DirectShow;
+using System.Drawing;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace OpenCNCPilot
 {
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
-		Machine machine = new Machine();
+        private FilterInfoCollection videoDevices;
+        private VideoCaptureDevice videoSource;
+        // === PEGA AQUÍ LO NUEVO (PASO 1 de la lógica) ===
+        private double cameraOffsetX = 0;
+        private double cameraOffsetY = 0;
+
+        private double p1MachineX = 0, p1MachineY = 0, p1GCodeX = 0, p1GCodeY = 0;
+        private double p2MachineX = 0, p2MachineY = 0, p2GCodeX = 0, p2GCodeY = 0;
+        private bool isP1Set = false;
+        private bool isP2Set = false;
+        // ===============================================
+        Machine machine = new Machine();
 
 		OpenFileDialog openFileDialogGCode = new OpenFileDialog() { Filter = Constants.FileFilterGCode };
 		SaveFileDialog saveFileDialogGCode = new SaveFileDialog() { Filter = Constants.FileFilterGCode };
@@ -40,9 +56,32 @@ namespace OpenCNCPilot
 		public MainWindow()
 		{
 			AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+
 			InitializeComponent();
 
-			openFileDialogGCode.FileOk += OpenFileDialogGCode_FileOk;
+			// --- INICIO: Buscar cámaras para la alineación ---
+			videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+				foreach (FilterInfo device in videoDevices)
+				{
+					ComboBoxCameras.Items.Add(device.Name);
+				}
+				if (ComboBoxCameras.Items.Count > 0)
+				{
+					ComboBoxCameras.SelectedIndex = 0; // Seleccionar la primera cámara por defecto
+				}
+            // --- FIN: Buscar cámaras ---
+
+            // --- INICIO: Apagar cámara al cerrar la ventana ---
+            this.Closing += (sender, e) =>
+            {
+                if (videoSource != null && videoSource.IsRunning)
+                {
+                    videoSource.SignalToStop();
+                    videoSource.WaitForStop();
+                }
+            };
+            // --- FIN: Apagar cámara al cerrar la ventana ---
+            openFileDialogGCode.FileOk += OpenFileDialogGCode_FileOk;
 			saveFileDialogGCode.FileOk += SaveFileDialogGCode_FileOk;
 			openFileDialogHeightMap.FileOk += OpenFileDialogHeightMap_FileOk;
 			saveFileDialogHeightMap.FileOk += SaveFileDialogHeightMap_FileOk;
@@ -344,7 +383,7 @@ namespace OpenCNCPilot
 		}
 
 		private void ButtonLayFlatViewport_Click(object sender, RoutedEventArgs e)                  // deHarro, 2024-08-23
-        {
+		{
 			viewport.Camera.Position = new System.Windows.Media.Media3D.Point3D(0, 10, 250);
 			viewport.Camera.LookDirection = new System.Windows.Media.Media3D.Vector3D(0, 1, -250);
 			viewport.Camera.UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 0, 1);
@@ -431,5 +470,128 @@ namespace OpenCNCPilot
 
 			return IntPtr.Zero;
 		}
+
+        // ==========================================
+        // ALINEACIÓN CON CÁMARA (Nuevas funciones)
+        // ==========================================
+
+        private void ButtonStartCamera_Click(object sender, RoutedEventArgs e)
+        {
+            if (videoDevices != null && videoDevices.Count > 0)
+            {
+                videoSource = new VideoCaptureDevice(videoDevices[ComboBoxCameras.SelectedIndex].MonikerString);
+                videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
+                videoSource.Start();
+            }
+        }
+
+        // Esta función se ejecuta por cada fotograma (frame) que manda la cámara
+        private void video_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            try
+            {
+                Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
+
+                // Convertir la imagen de la cámara a un formato que WPF pueda mostrar
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                    memory.Position = 0;
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = memory;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze(); // Muy importante para que no dé error al pasarlo a la pantalla
+
+                    // Enviar la imagen a nuestra interfaz
+                    Dispatcher.BeginInvoke(new System.Action(delegate
+                    {
+                        CameraImage.Source = bitmapImage;
+                    }));
+                }
+            }
+            catch { }
+        }
+
+        private void ButtonSetOffset_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show(
+                "Instrucciones para calibrar:\n\n" +
+                "1. Haz una pequeña marca en el material con la fresa/broca.\n" +
+                "2. Pon los ejes X e Y a cero (botón 'Zero (G10)' o 'Zero (G92)').\n" +
+                "3. Mueve la máquina hasta que la cruz roja de la cámara esté exactamente sobre la marca.\n\n" +
+                "¿Has hecho esto y quieres guardar el offset?",
+                "Calibrar Offset de Cámara", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                // El offset será la posición actual de trabajo (lo que nos hemos movido desde el agujero)
+                cameraOffsetX = machine.WorkPosition.X;
+                cameraOffsetY = machine.WorkPosition.Y;
+
+                MessageBox.Show($"Offset guardado correctamente:\nX = {cameraOffsetX:F3} mm\nY = {cameraOffsetY:F3} mm");
+            }
+        }
+        private void ButtonSetP1_Click(object sender, RoutedEventArgs e)
+        {
+            if (cameraOffsetX == 0 && cameraOffsetY == 0)
+            {
+                MessageBox.Show("¡Cuidado! Aún no has configurado el Offset de la cámara.");
+                return;
+            }
+
+            // Calculamos la posición real del husillo usando la cámara y el offset
+            p1MachineX = machine.MachinePosition.X - cameraOffsetX;
+            p1MachineY = machine.MachinePosition.Y - cameraOffsetY;
+
+            // Pedimos al usuario las coordenadas teóricas de este punto en su G-Code
+            OpenCNCPilot.EnterNumberWindow enwX = new OpenCNCPilot.EnterNumberWindow(0);
+            enwX.Title = "Punto 1: Coordenada X teórica (G-Code)";
+            enwX.ShowDialog();
+            if (!enwX.Ok) return; // CORREGIDO AQUÍ
+            p1GCodeX = enwX.Value; // CORREGIDO AQUÍ
+
+            OpenCNCPilot.EnterNumberWindow enwY = new OpenCNCPilot.EnterNumberWindow(0);
+            enwY.Title = "Punto 1: Coordenada Y teórica (G-Code)";
+            enwY.ShowDialog();
+            if (!enwY.Ok) return; // CORREGIDO AQUÍ
+            p1GCodeY = enwY.Value; // CORREGIDO AQUÍ
+
+            isP1Set = true;
+            MessageBox.Show($"PUNTO 1 GUARDADO\n\nPosición Real Máquina: X={p1MachineX:F3}, Y={p1MachineY:F3}\nPosición G-Code: X={p1GCodeX:F3}, Y={p1GCodeY:F3}");
+        }
+
+        private void ButtonSetP2_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isP1Set)
+            {
+                MessageBox.Show("Por favor, guarda primero el Punto 1.");
+                return;
+            }
+
+            p2MachineX = machine.MachinePosition.X - cameraOffsetX;
+            p2MachineY = machine.MachinePosition.Y - cameraOffsetY;
+
+            OpenCNCPilot.EnterNumberWindow enwX = new OpenCNCPilot.EnterNumberWindow(0);
+            enwX.Title = "Punto 2: Coordenada X teórica (G-Code)";
+            enwX.ShowDialog();
+            if (!enwX.Ok) return; // CORREGIDO AQUÍ
+            p2GCodeX = enwX.Value; // CORREGIDO AQUÍ
+
+            OpenCNCPilot.EnterNumberWindow enwY = new OpenCNCPilot.EnterNumberWindow(0);
+            enwY.Title = "Punto 2: Coordenada Y teórica (G-Code)";
+            enwY.ShowDialog();
+            if (!enwY.Ok) return; // CORREGIDO AQUÍ
+            p2GCodeY = enwY.Value; // CORREGIDO AQUÍ
+
+            isP2Set = true;
+            MessageBox.Show($"PUNTO 2 GUARDADO\n\nPosición Real Máquina: X={p2MachineX:F3}, Y={p2MachineY:F3}\nPosición G-Code: X={p2GCodeX:F3}, Y={p2GCodeY:F3}");
+        }
+
+        private void ButtonApplyAlignment_Click(object sender, RoutedEventArgs e)
+		{
+			// Aquí calcularemos la rotación y moveremos el G-Code
+		}
 	}
-}
+    }
