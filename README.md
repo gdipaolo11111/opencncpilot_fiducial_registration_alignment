@@ -1,7 +1,7 @@
 # OpenCNCPilot
 
 OpenCNCPilot is a GRBL compatible G-Code Sender.
-### 🎥 Alineación por Cámara (Fiducial Registration)
+### 🎥 Alineación por Cámara (Fiducial Registration) 
 
 Esta versión modificada de OpenCNCPilot incluye soporte para alineación visual mediante cámara o microscopio USB, ideal para grabado de PCBs o piezas pre-mecanizadas.
 
