@@ -1,7 +1,22 @@
 # OpenCNCPilot
 
 OpenCNCPilot is a GRBL compatible G-Code Sender.
+### 🎥 Alineación por Cámara (Fiducial Registration)
 
+Esta versión modificada de OpenCNCPilot incluye soporte para alineación visual mediante cámara o microscopio USB, ideal para grabado de PCBs o piezas pre-mecanizadas.
+
+#### Características:
+* **Visor con Mira:** Interfaz de vídeo en tiempo real con una retícula roja para centrado preciso.
+* **Calibración de Offset:** Sistema para calcular la distancia exacta entre el centro de la cámara y la punta de la fresa.
+* **Registro de 2 Puntos:** Permite alinear el diseño (G-Code) con la posición real de la pieza, corrigiendo automáticamente:
+    * **Traslación** (Desplazamiento en X e Y).
+    * **Rotación** (Si la pieza está torcida).
+    * **Escala** (Opcional, si hay pequeñas deformaciones).
+
+#### Guía de uso:
+1. **Calibrar Offset:** Haz una marca con la fresa, pon a cero, y desplaza la cámara hasta que la mira esté sobre la marca. Guarda el Offset.
+2. **Marcar Puntos:** Busca dos puntos conocidos en tu pieza con la cámara. Para cada uno, introduce la coordenada teórica que tiene en tu archivo G-Code.
+3. **Aplicar:** El software recalculará la trayectoria para que coincida exactamente con la realidad de tu máquina.
 Its main feature is its ability to **probe user-defined areas for warpage and wrap the toolpath around the curved surface**.
 This is especially useful for engraving metal surfaces with V-shaped cutters where any deviation in the Z-direction will result in wider or narrower traces, eg for **isolation milling PCBs** where warpage would result in broken or shorted traces.
 
