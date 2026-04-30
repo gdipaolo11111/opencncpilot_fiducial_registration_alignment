@@ -267,12 +267,15 @@
 				                <Canvas>
 				                    <Line X1="250" Y1="0" X2="250" Y2="500" Stroke="Red" StrokeThickness="1" Opacity="0.7"/>
 				                    <Line X1="0" Y1="250" X2="500" Y2="250" Stroke="Red" StrokeThickness="1" Opacity="0.7"/>
-                                    <Ellipse Width="30" Height="30"
+                                    <Ellipse Width="150" Height="150
+                                             "
                                          Stroke="Red"
                                          StrokeThickness="2"
                                          Opacity="0.7"
-                                         Canvas.Left="235"
-                                         Canvas.Top="235"/>
+                                         Canvas.Left="175"
+                                         Canvas.Top="175.
+                                             
+                                             "/>
                                 </Canvas>
 				            </Grid>
 				
