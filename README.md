@@ -18,7 +18,7 @@ Esta versión modificada de OpenCNCPilot incluye soporte para alineación visual
 2. **Marcar Puntos:** Busca dos puntos conocidos en tu pieza con la cámara. Para cada uno, introduce la coordenada teórica que tiene en tu archivo G-Code.
 3. **Aplicar:** El software recalculará la trayectoria para que coincida exactamente con la realidad de tu máquina.
 
-![Screenshot](https://raw.githubusercontent.com/martin2250/OpenCNCPilot/master/img/Screenshot_camera.png)
+![Screenshot](img/Screenshot_camera.png)
 
 Its main feature is its ability to **probe user-defined areas for warpage and wrap the toolpath around the curved surface**.
 This is especially useful for engraving metal surfaces with V-shaped cutters where any deviation in the Z-direction will result in wider or narrower traces, eg for **isolation milling PCBs** where warpage would result in broken or shorted traces.
