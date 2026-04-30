@@ -261,13 +261,19 @@
 				<Border Style="{StaticResource stylePanelOut}">
 				    <Expander Header="Camera Alignment" IsExpanded="False">
 				        <StackPanel>
-				            <Grid Width="220" Height="180" Background="Black" Margin="0,5,0,5">
+				            <Grid Width="500" Height="500" Background="Black" Margin="0,5,0,5">
 				                <Image Name="CameraImage" Stretch="Uniform"/>
 				                
 				                <Canvas>
-				                    <Line X1="110" Y1="0" X2="110" Y2="180" Stroke="Red" StrokeThickness="1" Opacity="0.7"/>
-				                    <Line X1="0" Y1="90" X2="220" Y2="90" Stroke="Red" StrokeThickness="1" Opacity="0.7"/>
-				                </Canvas>
+				                    <Line X1="250" Y1="0" X2="250" Y2="500" Stroke="Red" StrokeThickness="1" Opacity="0.7"/>
+				                    <Line X1="0" Y1="250" X2="500" Y2="250" Stroke="Red" StrokeThickness="1" Opacity="0.7"/>
+                                    <Ellipse Width="30" Height="30"
+                                         Stroke="Red"
+                                         StrokeThickness="2"
+                                         Opacity="0.7"
+                                         Canvas.Left="235"
+                                         Canvas.Top="235"/>
+                                </Canvas>
 				            </Grid>
 				
 				            <ComboBox Name="ComboBoxCameras" Margin="5" />
