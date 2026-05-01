@@ -706,5 +706,53 @@ namespace OpenCNCPilot.Properties {
                 this["ProbeOffsetY"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int CameraRotation {
+            get {
+                return ((int)(this["CameraRotation"]));
+            }
+            set {
+                this["CameraRotation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CameraMirrored {
+            get {
+                return ((bool)(this["CameraMirrored"]));
+            }
+            set {
+                this["CameraMirrored"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double CameraOffsetX {
+            get {
+                return ((double)(this["CameraOffsetX"]));
+            }
+            set {
+                this["CameraOffsetX"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double CameraOffsetY {
+            get {
+                return ((double)(this["CameraOffsetY"]));
+            }
+            set {
+                this["CameraOffsetY"] = value;
+            }
+        }
     }
 }

@@ -23,8 +23,8 @@ namespace OpenCNCPilot
         private FilterInfoCollection videoDevices;
         private VideoCaptureDevice videoSource;
         // === PEGA AQUÍ LO NUEVO (PASO 1 de la lógica) ===
-        private double cameraOffsetX = 0;
-        private double cameraOffsetY = 0;
+        private double cameraOffsetX = Properties.Settings.Default.CameraOffsetX;
+        private double cameraOffsetY = Properties.Settings.Default.CameraOffsetY;
 
         private double p1MachineX = 0, p1MachineY = 0, p1GCodeX = 0, p1GCodeY = 0;
         private double p2MachineX = 0, p2MachineY = 0, p2GCodeX = 0, p2GCodeY = 0;
@@ -33,9 +33,10 @@ namespace OpenCNCPilot
         // ===============================================
 
         // === VARIABLES CÁMARA (debajo del offset) ===
-        private int cameraRotation = 0; // 0, 90, 180, 270
-        private bool cameraMirrored = false;
 
+
+        private int cameraRotation = Properties.Settings.Default.CameraRotation;
+        private bool cameraMirrored = Properties.Settings.Default.CameraMirrored;
 
         Machine machine = new Machine();
 
@@ -692,14 +693,16 @@ namespace OpenCNCPilot
 
         private void ButtonRotateCamera_Click(object sender, RoutedEventArgs e)
         {
-            // Suma 90 grados. El % 360 hace que si llega a 360, vuelva a 0.
             cameraRotation = (cameraRotation + 90) % 360;
+            Properties.Settings.Default.CameraRotation = cameraRotation;
+            Properties.Settings.Default.Save(); // Guarda en memoria
         }
 
         private void ButtonMirrorCamera_Click(object sender, RoutedEventArgs e)
         {
-            // Cambia entre verdadero y falso (espejo horizontal)
             cameraMirrored = !cameraMirrored;
+            Properties.Settings.Default.CameraMirrored = cameraMirrored;
+            Properties.Settings.Default.Save(); // Guarda en memoria
         }
     }
 }
