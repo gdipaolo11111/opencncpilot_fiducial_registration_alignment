@@ -259,7 +259,7 @@
                     </Expander>
                 </Border>
 				<Border Style="{StaticResource stylePanelOut}">
-				    <Expander Header="Camera Alignment" IsExpanded="False">
+                    <Expander Header="Camera Alignment" IsExpanded="False" Collapsed="ExpanderCamera_Collapsed">
 				        <StackPanel>
 				            <Grid Width="500" Height="500" Background="Black" Margin="0,5,0,5">
 				                <Image Name="CameraImage" Stretch="Uniform"/>
@@ -278,11 +278,12 @@
                                              "/>
                                 </Canvas>
 				            </Grid>
-				
-				            <ComboBox Name="ComboBoxCameras" Margin="5" />
-				            <Button Name="ButtonStartCamera" Content="Start Camera" Style="{StaticResource styleButton}" Click="ButtonStartCamera_Click" Margin="5"/>
-				            
-				            <GroupBox Header="1. Calibration">
+
+                            <ComboBox Name="ComboBoxCameras" Margin="5" SelectionChanged="ComboBoxCameras_SelectionChanged" />
+                            <Button Content="Girar 90º" Click="ButtonRotateCamera_Click" Margin="2" Padding="5,2"/>
+                            <Button Content="Espejar Imagen" Click="ButtonMirrorCamera_Click" Margin="2" Padding="5,2"/>
+
+                            <GroupBox Header="1. Calibration">
 				                <Button Name="ButtonSetOffset" Content="Set Spindle-Camera Offset" Style="{StaticResource styleButton}" Click="ButtonSetOffset_Click" Margin="5"/>
 				            </GroupBox>
 				
