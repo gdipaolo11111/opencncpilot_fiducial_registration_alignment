@@ -1,22 +1,22 @@
 # OpenCNCPilot
 
 OpenCNCPilot is a GRBL compatible G-Code Sender.
-### 🎥 Alineación por Cámara (Fiducial Registration) 
+### 🎥 Camera Alignment (Fiducial Registration) 
 
-Esta versión modificada de OpenCNCPilot incluye soporte para alineación visual mediante cámara o microscopio USB, ideal para grabado de PCBs o piezas pre-mecanizadas.
+This modified version of OpenCNCPilot includes support for visual alignment using a camera or USB microscope, ideal for PCB engraving or pre-machined parts.
 
-#### Características:
-* **Visor con Mira:** Interfaz de vídeo en tiempo real con una retícula roja para centrado preciso.
-* **Calibración de Offset:** Sistema para calcular la distancia exacta entre el centro de la cámara y la punta de la fresa.
-* **Registro de 2 Puntos:** Permite alinear el diseño (G-Code) con la posición real de la pieza, corrigiendo automáticamente:
-    * **Traslación** (Desplazamiento en X e Y).
-    * **Rotación** (Si la pieza está torcida).
-    * **Escala** (Opcional, si hay pequeñas deformaciones).
+#### Features:
+* **Crosshair Viewer:** Real-time video interface with a red crosshair for precise centering.
+* **Offset Calibration:** System to calculate the exact distance between the camera center and the milling tool tip.
+* **2-Point Registration:** Allows aligning the design (G-Code) with the actual position of the part, automatically correcting:
+    * **Translation** (shift in X and Y).
+    * **Rotation** (if the part is misaligned).
+    * **Scaling** (optional, if there are slight deformations).
 
-#### Guía de uso:
-1. **Calibrar Offset:** Haz una marca con la fresa, pon a cero, y desplaza la cámara hasta que la mira esté sobre la marca. Guarda el Offset.
-2. **Marcar Puntos:** Busca dos puntos conocidos en tu pieza con la cámara. Para cada uno, introduce la coordenada teórica que tiene en tu archivo G-Code.
-3. **Aplicar:** El software recalculará la trayectoria para que coincida exactamente con la realidad de tu máquina.
+#### User Guide:
+1. **Calibrate Offset:** Make a mark with the tool, zero the coordinates, then move the camera until the crosshair is over the mark. Save the offset.
+2. **Mark Points:** Locate two known points on your part using the camera. For each one, enter the theoretical coordinate from your G-Code file.
+3. **Apply:** The software will recalculate the toolpath so it matches the real position on your machine.
 
 ![Screenshot](img/Screenshot_camera.png)
 
