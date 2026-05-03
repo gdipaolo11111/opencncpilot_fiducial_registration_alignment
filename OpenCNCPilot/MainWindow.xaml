@@ -280,8 +280,8 @@
 				            </Grid>
 
                             <ComboBox Name="ComboBoxCameras" Margin="5" SelectionChanged="ComboBoxCameras_SelectionChanged" />
-                            <Button Content="Girar 90º" Click="ButtonRotateCamera_Click" Margin="2" Padding="5,2"/>
-                            <Button Content="Espejar Imagen" Click="ButtonMirrorCamera_Click" Margin="2" Padding="5,2"/>
+                            <Button Content="Rotate 90º" Click="ButtonRotateCamera_Click" Margin="2" Padding="5,2"/>
+                            <Button Content="Mirror image" Click="ButtonMirrorCamera_Click" Margin="2" Padding="5,2"/>
 
                             <GroupBox Header="1. Calibration">
 				                <Button Name="ButtonSetOffset" Content="Set Spindle-Camera Offset" Style="{StaticResource styleButton}" Click="ButtonSetOffset_Click" Margin="5"/>
