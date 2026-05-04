@@ -613,14 +613,14 @@ namespace OpenCNCPilot
             p1GCodeY = enwY.Value; // CORREGIDO AQUÍ
 
             isP1Set = true;
-            MessageBox.Show($"PUNTO 1 GUARDADO\n\nPosición Real Máquina: X={p1MachineX:F3}, Y={p1MachineY:F3}\nPosición G-Code: X={p1GCodeX:F3}, Y={p1GCodeY:F3}");
+            MessageBox.Show($"POINT 1 SAVED\n\nPosición Real Máquina: X={p1MachineX:F3}, Y={p1MachineY:F3}\nPosición G-Code: X={p1GCodeX:F3}, Y={p1GCodeY:F3}");
         }
 
         private void ButtonSetP2_Click(object sender, RoutedEventArgs e)
         {
             if (!isP1Set)
             {
-                MessageBox.Show("Por favor, guarda primero el Punto 1.");
+                MessageBox.Show("Please save Point 1 first.");
                 return;
             }
 
@@ -628,26 +628,26 @@ namespace OpenCNCPilot
             p2MachineY = machine.MachinePosition.Y - cameraOffsetY;
 
             OpenCNCPilot.EnterNumberWindow enwX = new OpenCNCPilot.EnterNumberWindow(0);
-            enwX.Title = "Punto 2: Coordenada X teórica (G-Code)";
+            enwX.Title = "Point 2: Theoretical X coordinate (G-Code)";
             enwX.ShowDialog();
             if (!enwX.Ok) return; // CORREGIDO AQUÍ
             p2GCodeX = enwX.Value; // CORREGIDO AQUÍ
 
             OpenCNCPilot.EnterNumberWindow enwY = new OpenCNCPilot.EnterNumberWindow(0);
-            enwY.Title = "Punto 2: Coordenada Y teórica (G-Code)";
+            enwY.Title = "Point 2: Theoretical Y coordinate (G-Code)";
             enwY.ShowDialog();
             if (!enwY.Ok) return; // CORREGIDO AQUÍ
             p2GCodeY = enwY.Value; // CORREGIDO AQUÍ
 
             isP2Set = true;
-            MessageBox.Show($"PUNTO 2 GUARDADO\n\nPosición Real Máquina: X={p2MachineX:F3}, Y={p2MachineY:F3}\nPosición G-Code: X={p2GCodeX:F3}, Y={p2GCodeY:F3}");
+            MessageBox.Show($"POINT 2 SAVED\n\nMachine Real Position: X={p2MachineX:F3}, Y={p2MachineY:F3}\nG-Code Position: X={p2GCodeX:F3}, Y={p2GCodeY:F3}");
         }
 
         private void ButtonApplyAlignment_Click(object sender, RoutedEventArgs e)
         {
             if (!isP1Set || !isP2Set)
             {
-                MessageBox.Show("Faltan puntos por guardar. Asegúrate de configurar el Punto 1 y el Punto 2.");
+                MessageBox.Show("Points are missing. Make sure to set Point 1 and Point 2.");
                 return;
             }
 
@@ -677,17 +677,17 @@ namespace OpenCNCPilot
 
             // 4. Mostrar los cálculos para confirmar
             MessageBoxResult result = MessageBox.Show(
-                $"Cálculos de alineación:\n\n" +
-                $"Rotación necesaria: {rotationDegrees:F3}° grados\n" +
-                $"Factor de Escala: {scale:F4} (1.0 = perfecto)\n\n" +
-                $"¿Los datos parecen correctos? ¿Quieres aplicar esta transformación a tu código G?",
-                "Confirmar Alineación", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                $"Alignment calculations:\n\n" +
+                $"Required rotation: {rotationDegrees:F3}° degrees\n" +
+                $"Scale factor: {scale:F4} (1.0 = perfect)\n\n" +
+                $"Do the data look correct? Do you want to apply this transformation to your G-code?",
+                "Confirm Alignment", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 // El siguiente paso será interceptar las líneas del G-Code y aplicar la trigonometría (Seno y Coseno)
                 // a cada coordenada X e Y, usando p1MachineX y p1MachineY como anclaje.
-                MessageBox.Show("Matemática calculada con éxito. Próximo paso: Inyectar rotación en el G-Code.");
+                MessageBox.Show("Math successfully calculated. Next step: Inject rotation into the G-code.");
             }
         }
 
